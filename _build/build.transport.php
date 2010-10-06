@@ -29,7 +29,7 @@ $modx->setLogTarget('ECHO');
 /* load packagebuilder and transport package */
 $modx->loadClass('transport.modPackageBuilder','',false, true);
 $builder = new modPackageBuilder($modx);
-$builder->createPackage('ultimateparent','1.5','pl');
+$builder->createPackage('ultimateparent','2.0','pl');
 $builder->registerNamespace('ultimateparent',false,true,'{core_path}components/ultimateparent/');
 
 /* create snippet object */

@@ -3,45 +3,53 @@
  * @name UltimateParent
  * @version 1.3
  * @author Susan Ottwell <sottwell@sottwell.com> March 2006
- * @editor Jason Coward <jason@collabpad.com> Sept 17, 2006
- * @editor Al B <> May 18, 2007
- * @editor S. Hamblett <shamblett@cwazy.co.uk>
- * @editor Shaun McCormick <shaun@collabpad.com>
+ * @author Al B <> May 18, 2007
+ * @author S. Hamblett <shamblett@cwazy.co.uk>
+ * @author Shaun McCormick <shaun@modx.com>
+ * @author Jason Coward <modx@modx.com>
  *
- * UltimateParent - snippet for MODx 0.9x Travels up the resource tree from the
- * current resource to return the "ultimate" parent
+ * @param &id The id of the document whose parent you want to find.
+ * @param &top The top node for the search.
+ * @param &topLevel The top level node for the search (root = level 1)
  *
- * March 2006 - sottwell@sottwell.com
- * Bug fix Sept 17, 2006 - Jason Coward
- * Bug fix to prevent infinite loops if parent never = $top. 18 May, 2007 - Al B
- * Released to the Public Domain, use as you like November 2008 converted for
- * use with Revolution by S. Hamblett
+ * @license Public Domain, use as you like.
  *
- * Arguments:
- * $id - the id of the resource whose parent you want to find.
- * $top - the top of
- * the search
+ * @example [[UltimateParent? &id=`45` &top=`6`]]
+ * Will find the ultimate parent of document 45 if it is a child of document 6;
+ * otherwise it will return 45.
  *
- * examples:
- * [[UltimateParent? &id=`45` &top=`6`]]
- * will find the first parent of resource #45 under resource #6
+ * @example [[UltimateParent? &topLevel=`2`]]
+ * Will find the ultimate parent of the current document at a depth of 2 levels
+ * in the document hierarchy, with the root level being level 1.
  *
- * if id == 0 or top == id, will return id.
+ * This snippet travels up the document tree from a specified document and
+ * returns the "ultimate" parent.  Version 2.0 was rewritten to use the new
+ * getParentIds function features available only in MODx 0.9.5 or later.
  *
- * You can use this as the startDoc for DropMenu to create specific submenus.
+ * Based on the original UltimateParent 1.x snippet by Susan Ottwell
+ * <sottwell@sottwell.com>.  The topLevel parameter was introduced by staed and
+ * adopted here.
  */
 if (!isset($modx)) return '';
 
-$top = isset($top) ? $top : 0;
-$id = isset($id)? $id : $modx->resource->get('id');
-if ($id == $top || $id == 0) { return $id; }
-
-$pid = $modx->getParent($id,1,'id');
-if ($pid['id'] == $top) { return $id; }
-
-while ($pid['id'] != $top && $pid['id'] != 0) {
-    $id = $pid['id'];
-    $pid = $modx->getParent($id,1,'id');
-    if ($pid['id'] == $top) { return $id; }
+$top = isset($top) && intval($top) ? $top : 0;
+$id= isset($id) && intval($id) ? intval($id) : $modx->resource->get('id');
+$topLevel= isset($topLevel) && intval($topLevel) ? intval($topLevel) : 0;
+if ($id && $id != $top) {
+    $pid = $id;
+    $pids = $modx->getParentIds($id);
+    if (!$topLevel || count($pids) >= $topLevel) {
+        while ($parentIds= $modx->getParentIds($id, 1)) {
+            $pid = array_pop($parentIds);
+            if ($pid == $top) {
+                break;
+            }
+            $id = $pid;
+            $parentIds = $modx->getParentIds($id);
+            if ($topLevel && count($parentIds) < $topLevel) {
+                break;
+            }
+        }
+    }
 }
-return 0; /* if all else fails */
+return $id;
