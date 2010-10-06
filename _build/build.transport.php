@@ -38,7 +38,7 @@ $snippet->set('id',1);
 $snippet->set('name', 'UltimateParent');
 $snippet->set('description','Return the "ultimate" parent of a resource.');
 $snippet->set('category', 0);
-$snippet->set('snippet', file_get_contents($sources['source_core'] . '/ultimateparent.snippet.php'));
+$snippet->set('snippet', file_get_contents($sources['source_core'] . '/snippet.ultimateparent.php'));
 
 /* create snippet vehicle */
 $vehicle = $builder->createVehicle($snippet,array(
