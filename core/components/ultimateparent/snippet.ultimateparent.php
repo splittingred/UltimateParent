@@ -7,10 +7,12 @@
  * @author S. Hamblett <shamblett@cwazy.co.uk>
  * @author Shaun McCormick <shaun@modx.com>
  * @author Jason Coward <modx@modx.com>
+ * @author Bert Oost <bert@oostdesign.nl> March 2013
  *
  * @param &id The id of the document whose parent you want to find.
  * @param &top The top node for the search.
  * @param &topLevel The top level node for the search (root = level 1)
+ * @param &context The context where to relative the search to
  *
  * @license Public Domain, use as you like.
  *
@@ -35,17 +37,18 @@ if (!isset($modx)) return '';
 $top = isset($top) && intval($top) ? $top : 0;
 $id= isset($id) && intval($id) ? intval($id) : $modx->resource->get('id');
 $topLevel= isset($topLevel) && intval($topLevel) ? intval($topLevel) : 0;
+$context= isset($context) && !empty($context) ? $context : $modx->resource->get('context_key');
 if ($id && $id != $top) {
     $pid = $id;
-    $pids = $modx->getParentIds($id);
+    $pids = $modx->getParentIds($id, 10, array('context' => $context));
     if (!$topLevel || count($pids) >= $topLevel) {
-        while ($parentIds= $modx->getParentIds($id, 1)) {
+        while ($parentIds= $modx->getParentIds($id, 1, array('context' => $context))) {
             $pid = array_pop($parentIds);
             if ($pid == $top) {
                 break;
             }
             $id = $pid;
-            $parentIds = $modx->getParentIds($id);
+            $parentIds = $modx->getParentIds($id, 10, array('context' => $context));
             if ($topLevel && count($parentIds) < $topLevel) {
                 break;
             }
