@@ -32,20 +32,22 @@
  */
 if (!isset($modx)) return '';
 
-$top = isset($top) && intval($top) ? $top : 0;
-$id= isset($id) && intval($id) ? intval($id) : $modx->resource->get('id');
-$topLevel= isset($topLevel) && intval($topLevel) ? intval($topLevel) : 0;
+$top = intval($modx->getOption('top', $scriptProperties, 0));
+$id = intval($modx->getOption('id', $scriptProperties, $modx->resource->get('id')));
+$topLevel = intval($modx->getOption('topLevel', $scriptProperties, 0));
+$context = $modx->getOption('context', $scriptProperties, $modx->context->key);
+
 if ($id && $id != $top) {
     $pid = $id;
     $pids = $modx->getParentIds($id);
     if (!$topLevel || count($pids) >= $topLevel) {
-        while ($parentIds= $modx->getParentIds($id, 1)) {
+        while ($parentIds = $modx->getParentIds($id, 1, array('context' => $context))) {
             $pid = array_pop($parentIds);
             if ($pid == $top) {
                 break;
             }
             $id = $pid;
-            $parentIds = $modx->getParentIds($id);
+            $parentIds = $modx->getParentIds($id, 10, array('context' => $context));
             if ($topLevel && count($parentIds) < $topLevel) {
                 break;
             }
