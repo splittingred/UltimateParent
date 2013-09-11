@@ -33,7 +33,7 @@
 if (!isset($modx)) return '';
 
 $top = intval($modx->getOption('top', $scriptProperties, 0));
-$id = intval($modx->getOption('id', $scriptProperties, $modx->resource->get('id')));
+$id = intval($modx->getOption('id', $scriptProperties, ($modx->resource) ? $modx->resource->get('id') : 0));
 $topLevel = intval($modx->getOption('topLevel', $scriptProperties, 0));
 $context = $modx->getOption('context', $scriptProperties, $modx->context->key);
 
